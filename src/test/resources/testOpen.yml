@@ -1,0 +1,5 @@
+type: query_string
+query_string_column_name: qs
+expanded_columns:
+  - {name: q1, type: string}
+  - {name: q2, type: long}
