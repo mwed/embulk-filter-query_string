@@ -154,8 +154,6 @@ public class QueryStringFilterPlugin
                     int curr = 0;
 
                     for (Column inputColumn : inputSchema.getColumns()) {
-                        logger.info("inputColumn -> " + inputColumn.getName() + ", " + inputColumn.getType());
-
                         if (columnName.equals(inputColumn.getName())) {
                             String path = reader.getString(inputColumn);
 
@@ -165,11 +163,8 @@ public class QueryStringFilterPlugin
 
                                 Map<String, Object> map = new HashMap<>();
                                 QueryStringParser.parseQueryString(queryString, callback, map);
-                                logger.info("map -> " + map);
-
                                 for (ColumnConfig config : task.getExpandedColumns()) {
                                     Object object = map.get(config.getName());
-                                    logger.info("builder.set " + config.getType().toString() + "(" + curr + ", " + object + ")");
 
                                     if (object == null) {
                                         builder.setNull(curr);
@@ -196,11 +191,9 @@ public class QueryStringFilterPlugin
                                 }
                             }
                             else {
-                                logger.warn("The column was ignored because it does not include query string: " + path);
+                                logger.warn("The column was ignored because it does not seem to be a query string: " + path);
 
                                 for (ColumnConfig config : task.getExpandedColumns()) {
-                                    logger.info("builder.set " + config.getType().toString() + "(" + curr + ", null)");
-
                                     builder.setNull(curr);
                                     curr++;
                                 }
@@ -212,28 +205,18 @@ public class QueryStringFilterPlugin
                             }
                             else {
                                 if (Types.STRING.equals(inputColumn.getType())) {
-                                    logger.info("builder.set " + inputColumn.getType().toString() + "(" + curr + ", " + reader.getString(inputColumn) + ")");
-
                                     builder.setString(curr, reader.getString(inputColumn));
                                 }
                                 else if (Types.BOOLEAN.equals(inputColumn.getType())) {
-                                    logger.info("builder.set " + inputColumn.getType().toString() + "(" + curr + ", " + reader.getBoolean(inputColumn) + ")");
-
                                     builder.setBoolean(curr, reader.getBoolean(inputColumn));
                                 }
                                 else if (Types.DOUBLE.equals(inputColumn.getType())) {
-                                    logger.info("builder.set " + inputColumn.getType().toString() + "(" + curr + ", " + reader.getDouble(inputColumn) + ")");
-
                                     builder.setDouble(curr, reader.getDouble(inputColumn));
                                 }
                                 else if (Types.LONG.equals(inputColumn.getType())) {
-                                    logger.info("builder.set " + inputColumn.getType().toString() + "(" + curr + ", " + reader.getLong(inputColumn) + ")");
-
                                     builder.setLong(curr, reader.getLong(inputColumn));
                                 }
                                 else if (Types.TIMESTAMP.equals(inputColumn.getType())) {
-                                    logger.info("builder.set " + inputColumn.getType().toString() + "(" + curr + ", " + reader.getTimestamp(inputColumn) + ")");
-
                                     builder.setTimestamp(curr, reader.getTimestamp(inputColumn));
                                 }
                             }
