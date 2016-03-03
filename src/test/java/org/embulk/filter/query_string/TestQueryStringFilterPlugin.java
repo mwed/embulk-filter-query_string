@@ -17,7 +17,6 @@
 package org.embulk.filter.query_string;
 
 import com.google.common.base.Throwables;
-
 import org.embulk.EmbulkTestRuntime;
 import org.embulk.config.ConfigLoader;
 import org.embulk.config.ConfigSource;
@@ -41,13 +40,14 @@ import static org.embulk.spi.type.Types.STRING;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class TestQueryStringFilterPlugin {
-
+public class TestQueryStringFilterPlugin
+{
     @Rule
     public EmbulkTestRuntime runtime = new EmbulkTestRuntime();
 
     @Test
-    public void testTransaction() {
+    public void testTransaction()
+    {
         ConfigSource configSource = loadConfigSource("testTransaction.yml");
         final Schema inputSchema = Schema.builder()
                 .add("qb", STRING)
@@ -57,9 +57,11 @@ public class TestQueryStringFilterPlugin {
 
         final QueryStringFilterPlugin plugin = new QueryStringFilterPlugin();
 
-        plugin.transaction(configSource, inputSchema, new FilterPlugin.Control() {
+        plugin.transaction(configSource, inputSchema, new FilterPlugin.Control()
+        {
             @Override
-            public void run(TaskSource taskSource, Schema outputSchema) {
+            public void run(TaskSource taskSource, Schema outputSchema)
+            {
                 assertThat(outputSchema.getColumnCount(), is(5));
 
                 assertThat(outputSchema.getColumn(0).getName(), is("qb"));
@@ -72,7 +74,8 @@ public class TestQueryStringFilterPlugin {
     }
 
     @Test
-    public void testOpenSuccessfully() {
+    public void testOpenSuccessfully()
+    {
         ConfigSource configSource = loadConfigSource("testOpen.yml");
         final Schema inputSchema = Schema.builder()
                 .add("qb", STRING)
@@ -81,9 +84,11 @@ public class TestQueryStringFilterPlugin {
                 .build();
 
         final QueryStringFilterPlugin plugin = new QueryStringFilterPlugin();
-        plugin.transaction(configSource, inputSchema, new FilterPlugin.Control() {
+        plugin.transaction(configSource, inputSchema, new FilterPlugin.Control()
+        {
             @Override
-            public void run(TaskSource taskSource, Schema outputSchema) {
+            public void run(TaskSource taskSource, Schema outputSchema)
+            {
                 TestPageBuilderReader.MockPageOutput mockPageOutput = new TestPageBuilderReader.MockPageOutput();
                 PageOutput pageOutput = plugin.open(taskSource, inputSchema, outputSchema, mockPageOutput);
 
@@ -108,13 +113,15 @@ public class TestQueryStringFilterPlugin {
         });
     }
 
-    private ConfigSource loadConfigSource(String yamlPath) {
+    private ConfigSource loadConfigSource(String yamlPath)
+    {
         try {
             ConfigLoader loader = new ConfigLoader(Exec.getModelManager());
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(yamlPath);
 
             return loader.fromYaml(stream);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw Throwables.propagate(e);
         }
     }
