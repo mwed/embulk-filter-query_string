@@ -78,14 +78,14 @@ task gemspec {
     doLast {
         gemspecFile.write($/
 Gem::Specification.new do |spec|
-  spec.name          = "${project.name}"
-  spec.version       = "${project.version}"
-  spec.authors       = ["Naoto Takai"]
+  spec.name          = "embulk-filter-query_string"
+  spec.version       = "0.1.0"
+  spec.authors       = ["Minnano Wedding Co., Ltd."]
   spec.summary       = %[Query String filter plugin for Embulk]
-  spec.description   = %[Query String]
+  spec.description   = %[The query string filter plugin parses the column contents as query string and insert columns from that field.]
   spec.email         = ["takai.naoto@mwed.co.jp"]
-  spec.licenses      = ["MIT"]
-  # TODO set this: spec.homepage      = "https://github.com/takai.naoto/embulk-filter-query_string"
+  spec.licenses      = ["Apache License, Version 2.0"]
+  spec.homepage      = "https://github.com/mwed/embulk-filter-query_string"
 
   spec.files         = `git ls-files`.split("\n") + Dir["classpath/*.jar"]
   spec.test_files    = spec.files.grep(%r"^(test|spec)/")
