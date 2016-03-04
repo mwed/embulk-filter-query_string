@@ -2,6 +2,8 @@
 
 The query string filter plugin parses the column contents as query string and insert columns from that field.
 
+[![Circle CI](https://circleci.com/gh/mwed/embulk-filter-query_string.svg?style=svg)](https://circleci.com/gh/mwed/embulk-filter-query_string)
+
 ## Overview
 
 * **Plugin type**: filter
