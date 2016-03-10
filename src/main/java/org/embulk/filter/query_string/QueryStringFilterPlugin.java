@@ -115,7 +115,12 @@ public class QueryStringFilterPlugin
                     String key = queryString.substring(keyStart, keyEnd);
                     String value = queryString.substring(valueStart, valueEnd);
 
-                    storage.put(key, Double.parseDouble(value));
+                    try {
+                        storage.put(key, Double.parseDouble(value));
+                    }
+                    catch (NumberFormatException e) {
+                        storage.put(key, null);
+                    }
                 }
             };
 
@@ -125,9 +130,15 @@ public class QueryStringFilterPlugin
                 public void parseKeyValuePair(String queryString, int keyStart, int keyEnd, int valueStart, int valueEnd, Map<String, Object> storage)
                 {
                     String key = queryString.substring(keyStart, keyEnd);
-                    long value = ParseUtils.parseUnsignedLong(queryString, valueStart, valueEnd);
 
-                    storage.put(key, value);
+                    try {
+                        long value = ParseUtils.parseUnsignedLong(queryString, valueStart, valueEnd);
+
+                        storage.put(key, value);
+                    }
+                    catch (NumberFormatException e) {
+                        storage.put(key, null);
+                    }
                 }
             };
 
@@ -137,9 +148,15 @@ public class QueryStringFilterPlugin
                 public void parseKeyValuePair(String queryString, int keyStart, int keyEnd, int valueStart, int valueEnd, Map<String, Object> storage)
                 {
                     String key = queryString.substring(keyStart, keyEnd);
-                    long value = ParseUtils.parseUnsignedLong(queryString, valueStart, valueEnd);
 
-                    storage.put(key, Timestamp.ofEpochSecond(value));
+                    try {
+                        long value = ParseUtils.parseUnsignedLong(queryString, valueStart, valueEnd);
+
+                        storage.put(key, Timestamp.ofEpochSecond(value));
+                    }
+                    catch (NumberFormatException e) {
+                        storage.put(key, null);
+                    }
                 }
             };
 

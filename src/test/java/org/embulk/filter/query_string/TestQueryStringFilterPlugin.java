@@ -29,6 +29,7 @@ import org.embulk.spi.PageReader;
 import org.embulk.spi.PageTestUtils;
 import org.embulk.spi.Schema;
 import org.embulk.spi.TestPageBuilderReader;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -38,7 +39,9 @@ import java.util.List;
 
 import static org.embulk.spi.type.Types.STRING;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class TestQueryStringFilterPlugin
 {
@@ -106,8 +109,44 @@ public class TestQueryStringFilterPlugin
 
                     assertThat(pageReader.getString(0), is("before"));
                     assertThat(pageReader.getString(1), is("one"));
-                    assertThat(pageReader.getLong(2), is(Long.valueOf(2L)));
+                    assertEquals(2L, pageReader.getLong(2));
                     assertThat(pageReader.getString(3), is("after"));
+                }
+            }
+        });
+    }
+
+    @Ignore
+    @Test
+    public void testOpenWithInvalidValue()
+    {
+        ConfigSource configSource = loadConfigSource("testOpenWithInvalidValue.yml");
+        final Schema inputSchema = Schema.builder()
+                .add("qs", STRING)
+                .build();
+
+        final QueryStringFilterPlugin plugin = new QueryStringFilterPlugin();
+        plugin.transaction(configSource, inputSchema, new FilterPlugin.Control()
+        {
+            @Override
+            public void run(TaskSource taskSource, Schema outputSchema)
+            {
+                TestPageBuilderReader.MockPageOutput mockPageOutput = new TestPageBuilderReader.MockPageOutput();
+                PageOutput pageOutput = plugin.open(taskSource, inputSchema, outputSchema, mockPageOutput);
+
+                List<Page> pages = PageTestUtils.buildPage(runtime.getBufferAllocator(), inputSchema, "/path?q1=alpha");
+                for (Page page : pages) {
+                    pageOutput.add(page);
+                }
+
+                pageOutput.finish();
+                pageOutput.close();
+
+                PageReader pageReader = new PageReader(outputSchema);
+                for (Page page : mockPageOutput.pages) {
+                    pageReader.setPage(page);
+
+                    assertTrue(pageReader.isNull(0));
                 }
             }
         });
