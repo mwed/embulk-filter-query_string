@@ -172,10 +172,15 @@ public class QueryStringFilterPlugin
 
                     for (Column inputColumn : inputSchema.getColumns()) {
                         if (columnName.equals(inputColumn.getName())) {
-                            String path = reader.getString(inputColumn);
+                            String path = null;
+                            int pos = -1;
 
-                            int pos = path.indexOf('?');
-                            if (pos > 0) {
+                            if (!reader.isNull(inputColumn)) {
+                                path = reader.getString(inputColumn);
+                                pos = path.indexOf('?');
+                            }
+
+                            if (path != null && pos > 0) {
                                 String queryString = path.substring(pos + 1);
 
                                 Map<String, Object> map = new HashMap<>();
