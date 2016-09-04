@@ -95,7 +95,7 @@ public class TestQueryStringFilterPlugin
                 TestPageBuilderReader.MockPageOutput mockPageOutput = new TestPageBuilderReader.MockPageOutput();
                 PageOutput pageOutput = plugin.open(taskSource, inputSchema, outputSchema, mockPageOutput);
 
-                List<Page> pages = PageTestUtils.buildPage(runtime.getBufferAllocator(), inputSchema, "before", "/path?q1=one&q2=2", "after");
+                List<Page> pages = PageTestUtils.buildPage(runtime.getBufferAllocator(), inputSchema, "before", "/path?q1=one&q2=2#fragment", "after");
                 for (Page page : pages) {
                     pageOutput.add(page);
                 }

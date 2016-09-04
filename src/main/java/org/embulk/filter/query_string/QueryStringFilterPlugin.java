@@ -40,10 +40,14 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class QueryStringFilterPlugin
         implements FilterPlugin
 {
+    public static final Pattern QUERY_STRING_PATTERN = Pattern.compile("[^\\?]*\\?([a-z0-9=&;*._%+-]+)", Pattern.CASE_INSENSITIVE);
+
     @Override
     public void transaction(ConfigSource config, Schema inputSchema, FilterPlugin.Control control)
     {
@@ -173,16 +177,18 @@ public class QueryStringFilterPlugin
                     for (Column inputColumn : inputSchema.getColumns()) {
                         if (columnName.equals(inputColumn.getName())) {
                             String path = null;
-                            int pos = -1;
+                            String queryString = null;
 
                             if (!reader.isNull(inputColumn)) {
                                 path = reader.getString(inputColumn);
-                                pos = path.indexOf('?');
+
+                                Matcher matcher = QUERY_STRING_PATTERN.matcher(path);
+                                if (matcher.lookingAt()) {
+                                    queryString = matcher.group(1);
+                                }
                             }
 
-                            if (path != null && pos > 0) {
-                                String queryString = path.substring(pos + 1);
-
+                            if (queryString != null) {
                                 Map<String, Object> map = new HashMap<>();
                                 QueryStringParser.parseQueryString(queryString, callback, map);
                                 for (ColumnConfig config : task.getExpandedColumns()) {
