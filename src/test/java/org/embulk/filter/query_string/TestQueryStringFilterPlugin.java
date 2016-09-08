@@ -116,6 +116,46 @@ public class TestQueryStringFilterPlugin
         });
     }
 
+    @Test
+    public void testOpenSuccessfullyWithHashbang()
+    {
+        ConfigSource configSource = loadConfigSource("testOpen.yml");
+        final Schema inputSchema = Schema.builder()
+                .add("qb", STRING)
+                .add("qs", STRING)
+                .add("qa", STRING)
+                .build();
+
+        final QueryStringFilterPlugin plugin = new QueryStringFilterPlugin();
+        plugin.transaction(configSource, inputSchema, new FilterPlugin.Control()
+        {
+            @Override
+            public void run(TaskSource taskSource, Schema outputSchema)
+            {
+                TestPageBuilderReader.MockPageOutput mockPageOutput = new TestPageBuilderReader.MockPageOutput();
+                PageOutput pageOutput = plugin.open(taskSource, inputSchema, outputSchema, mockPageOutput);
+
+                List<Page> pages = PageTestUtils.buildPage(runtime.getBufferAllocator(), inputSchema, "before", "/#!/path?q1=one&q2=2#fragment", "after");
+                for (Page page : pages) {
+                    pageOutput.add(page);
+                }
+
+                pageOutput.finish();
+                pageOutput.close();
+
+                PageReader pageReader = new PageReader(outputSchema);
+                for (Page page : mockPageOutput.pages) {
+                    pageReader.setPage(page);
+
+                    assertThat(pageReader.getString(0), is("before"));
+                    assertThat(pageReader.getString(1), is("one"));
+                    assertEquals(2L, pageReader.getLong(2));
+                    assertThat(pageReader.getString(3), is("after"));
+                }
+            }
+        });
+    }
+
     @Ignore
     @Test
     public void testOpenWithInvalidValue()
