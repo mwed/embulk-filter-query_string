@@ -45,6 +45,11 @@ import static org.junit.Assert.assertTrue;
 
 public class TestQueryStringFilterPlugin
 {
+    private static interface AssertionWithPage
+    {
+        void run(PageReader pageReader, TestPageBuilderReader.MockPageOutput pageOutput);
+    }
+
     @Rule
     public EmbulkTestRuntime runtime = new EmbulkTestRuntime();
 
@@ -85,7 +90,21 @@ public class TestQueryStringFilterPlugin
                 .add("qs", STRING)
                 .add("qa", STRING)
                 .build();
-        testQueryString(configSource, inputSchema, "/path?q1=one&q2=2#fragment");
+        testQueryString(configSource, inputSchema, "/path?q1=1&q2=2#fragment", new AssertionWithPage()
+        {
+            @Override
+            public void run(PageReader pageReader, TestPageBuilderReader.MockPageOutput pageOutput)
+            {
+                for (Page page : pageOutput.pages) {
+                    pageReader.setPage(page);
+
+                    assertThat(pageReader.getString(0), is("before"));
+                    assertThat(pageReader.getString(1), is("1"));
+                    assertEquals(2L, pageReader.getLong(2));
+                    assertThat(pageReader.getString(3), is("after"));
+                }
+            }
+        });
     }
 
     @Test
@@ -98,7 +117,21 @@ public class TestQueryStringFilterPlugin
                 .add("qa", STRING)
                 .build();
 
-        testQueryString(configSource, inputSchema, "/#!/path?q1=one&q2=2#fragment");
+        testQueryString(configSource, inputSchema, "/#!/path?q1=one&q2=2#fragment", new AssertionWithPage()
+        {
+            @Override
+            public void run(PageReader pageReader, TestPageBuilderReader.MockPageOutput pageOutput)
+            {
+                for (Page page : pageOutput.pages) {
+                    pageReader.setPage(page);
+
+                    assertThat(pageReader.getString(0), is("before"));
+                    assertThat(pageReader.getString(1), is("one"));
+                    assertEquals(2L, pageReader.getLong(2));
+                    assertThat(pageReader.getString(3), is("after"));
+                }
+            }
+        });
     }
 
     @Ignore
@@ -137,7 +170,7 @@ public class TestQueryStringFilterPlugin
         });
     }
 
-    private void testQueryString(ConfigSource configSource, final Schema inputSchema, final String path)
+    private void testQueryString(ConfigSource configSource, final Schema inputSchema, final String path, final AssertionWithPage assertion)
     {
         final QueryStringFilterPlugin plugin = new QueryStringFilterPlugin();
         plugin.transaction(configSource, inputSchema, new FilterPlugin.Control()
@@ -157,14 +190,8 @@ public class TestQueryStringFilterPlugin
                 pageOutput.close();
 
                 PageReader pageReader = new PageReader(outputSchema);
-                for (Page page : mockPageOutput.pages) {
-                    pageReader.setPage(page);
-
-                    assertThat(pageReader.getString(0), is("before"));
-                    assertThat(pageReader.getString(1), is("one"));
-                    assertEquals(2L, pageReader.getLong(2));
-                    assertThat(pageReader.getString(3), is("after"));
-                }
+                assertion.run(pageReader, mockPageOutput);
+                ;
             }
         });
     }
