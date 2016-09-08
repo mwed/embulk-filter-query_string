@@ -20,8 +20,8 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-    compile "org.embulk:embulk-core:0.8.4"
-    provided "org.embulk:embulk-core:0.8.4"
+    compile "org.embulk:embulk-core:0.8.13"
+    provided "org.embulk:embulk-core:0.8.13"
 
     // compile "YOUR_JAR_DEPENDENCY_GROUP:YOUR_JAR_DEPENDENCY_MODULE:YOUR_JAR_DEPENDENCY_VERSION"
     compile 'org.apache.httpcomponents:httpclient:4.5.1'
