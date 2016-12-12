@@ -14,7 +14,7 @@ configurations {
     provided
 }
 
-version = "0.1.0"
+version = "0.2.0"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -79,7 +79,7 @@ task gemspec {
         gemspecFile.write($/
 Gem::Specification.new do |spec|
   spec.name          = "embulk-filter-query_string"
-  spec.version       = "0.1.1"
+  spec.version       = "${version}"
   spec.authors       = ["Minnano Wedding Co., Ltd."]
   spec.summary       = %[Query String filter plugin for Embulk]
   spec.description   = %[The query string filter plugin parses the column contents as query string and insert columns from that field.]
