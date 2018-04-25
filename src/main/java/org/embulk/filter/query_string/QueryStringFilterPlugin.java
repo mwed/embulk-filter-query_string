@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 public class QueryStringFilterPlugin
         implements FilterPlugin
 {
-    public static final Pattern QUERY_STRING_PATTERN = Pattern.compile("[^\\?]*\\?([a-z0-9=&;*._%+-]+)", Pattern.CASE_INSENSITIVE);
+    public static final Pattern QUERY_STRING_PATTERN = Pattern.compile("[^\\?]*\\?([a-z0-9=&;*._%+-/():]+)", Pattern.CASE_INSENSITIVE);
 
     @Override
     public void transaction(ConfigSource config, Schema inputSchema, FilterPlugin.Control control)

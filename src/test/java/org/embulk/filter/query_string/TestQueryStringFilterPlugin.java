@@ -90,7 +90,7 @@ public class TestQueryStringFilterPlugin
                 .add("qs", STRING)
                 .add("qa", STRING)
                 .build();
-        testQueryString(configSource, inputSchema, "/path?q1=1&q2=2#fragment", new AssertionWithPage()
+        testQueryString(configSource, inputSchema, "/path?q1=1/(:)/&q2=2#fragment", new AssertionWithPage()
         {
             @Override
             public void run(PageReader pageReader, TestPageBuilderReader.MockPageOutput pageOutput)
@@ -99,7 +99,7 @@ public class TestQueryStringFilterPlugin
                     pageReader.setPage(page);
 
                     assertThat(pageReader.getString(0), is("before"));
-                    assertThat(pageReader.getString(1), is("1"));
+                    assertThat(pageReader.getString(1), is("1/(:)/"));
                     assertEquals(2L, pageReader.getLong(2));
                     assertThat(pageReader.getString(3), is("after"));
                 }
